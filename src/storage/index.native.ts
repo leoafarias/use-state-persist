@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
-class SyncStorage implements Storage {
+class SyncStorage implements StorageProvider {
   static instance: SyncStorage;
   private data: Data = new Map();
-  static loaded: boolean = false;
+  static loaded = false;
 
   private constructor() {}
 
@@ -38,10 +38,6 @@ class SyncStorage implements Storage {
 
   getAllKeys() {
     return Array.from(this.data.keys());
-  }
-
-  key(index: number) {
-    return localStorage.key(index);
   }
 
   get length() {
