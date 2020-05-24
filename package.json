@@ -1,0 +1,17 @@
+{
+  "name": "use-state-persist",
+  "version": "1.0.0",
+  "description": "Simple React Hook to persist/cache useState hook.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "react": "^16.8.0"
+  },
+  "devDependencies": {
+    "@react-native-community/async-storage": "^1.10.3",
+    "@types/react": "^16.9.35",
+    "react": "^16.8.0",
+    "react-native": "^0.62.2",
+    "typescript": "3.5.1"
+  }
+}
