@@ -1,11 +1,7 @@
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from '@react-native-community/async-storage';
 
-type Key = string;
-type KeyValue = [Key, string | null];
-type Data = Map<string, any>;
-
-class SyncStorage {
-  static instance: StorageProvider;
+class SyncStorage implements Storage {
+  static instance: SyncStorage;
   private data: Data = new Map();
   static loaded: boolean = false;
 
@@ -17,11 +13,11 @@ class SyncStorage {
   }
 
   async init() {
+    if (SyncStorage.loaded) return;
     const keys = await AsyncStorage.getAllKeys();
     const storageData = await AsyncStorage.multiGet(keys);
-    storageData.forEach((item) => this.mapToMemory(item));
+    storageData.forEach(item => this.mapToMemory(item));
     SyncStorage.loaded = true;
-    return SyncStorage.instance;
   }
 
   getItem<T>(key: string) {
@@ -30,7 +26,7 @@ class SyncStorage {
   }
 
   setItem<T>(key: string, value: T) {
-    if (!key) throw Error("No key provided");
+    if (!key) throw Error('No key provided');
     this.data.set(key, value);
     AsyncStorage.setItem(key, JSON.stringify(value));
   }
@@ -44,7 +40,20 @@ class SyncStorage {
     return Array.from(this.data.keys());
   }
 
-  private mapToMemory(item: KeyValue) {
+  key(index: number) {
+    return localStorage.key(index);
+  }
+
+  get length() {
+    return this.data.size;
+  }
+
+  clear() {
+    this.data.clear();
+    AsyncStorage.clear();
+  }
+
+  private mapToMemory(item: StorageItem) {
     const key = item[0];
     let value = item[1] ?? null;
 
@@ -59,7 +68,7 @@ class SyncStorage {
 
   checkIfLoaded() {
     if (SyncStorage.loaded) return;
-    throw Error("Sync Storage `init()` needs to be called before using it.");
+    throw Error('Sync Storage `init()` needs to be called before using it.');
   }
 }
 

@@ -1,17 +1,18 @@
-import { useEffect, useState, useCallback } from "react";
+import {useEffect, useState, useCallback} from 'react';
+import {syncStorage} from './storage';
 
-export const useAppState = <T>(key: string, value?: T): ReturnValues<T> => {
+export const useStatePersist = <T>(key: string, value?: T): ReturnValues<T> => {
   const [state, setState] = useState<Value<T>>(value);
   const [isStale, setIsStale] = useState(true);
 
-  // Checks if value is stale
   useEffect(() => {
     loadInitialState();
   }, []);
 
   const loadInitialState = async () => {
+    await syncStorage.init();
     setIsStale(value === undefined);
-    const payload = localStorage.getItem(key);
+    const payload = syncStorage.getItem(key);
     if (!payload) {
       setState(undefined);
       return;
@@ -22,10 +23,14 @@ export const useAppState = <T>(key: string, value?: T): ReturnValues<T> => {
 
   const setNewState = useCallback(
     async (value: T) => {
-      setState(value);
-      setIsStale(false);
+      const currentState = JSON.stringify(state);
+      const newState = JSON.stringify(value);
 
-      localStorage.setItem(key, JSON.stringify(value));
+      if (currentState !== newState) {
+        setState(value);
+        setIsStale(false);
+        syncStorage.setItem(key, newState);
+      }
     },
     [setState]
   );

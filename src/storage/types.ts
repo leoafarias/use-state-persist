@@ -1,6 +1,10 @@
+type Key = string;
+type StorageItem = [Key, string | null];
+type Data = Map<string, any>;
 interface StorageProvider {
-  getItem<T = any>(key: string): T;
-  setItem<T = any>(key: string, value: T): void;
+  init(): Promise<void>;
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
   removeItem(key: string): void;
-  getAllKeys(): string[];
+  clear(): void;
 }

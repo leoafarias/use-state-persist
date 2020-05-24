@@ -9,9 +9,21 @@
   },
   "devDependencies": {
     "@react-native-community/async-storage": "^1.10.3",
-    "@types/react": "^16.9.35",
-    "react": "^16.8.0",
+    "@testing-library/react-hooks": "^3.2.1",
+    "gts": "^2.0.2",
     "react-native": "^0.62.2",
-    "typescript": "3.5.1"
+    "react-test-renderer": "^16.9.0",
+    "typescript": "^3.8.3",
+    "@types/node": "^13.11.1",
+    "@types/react": "^16.9.35"
+  },
+  "scripts": {
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "yarn run compile",
+    "pretest": "yarn run compile",
+    "posttest": "yarn run check"
   }
 }
