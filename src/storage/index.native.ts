@@ -1,6 +1,10 @@
 import AsyncStorage from "@react-native-community/async-storage";
 
-export class SyncStorage {
+type Key = string;
+type KeyValue = [Key, string | null];
+type Data = Map<string, any>;
+
+class SyncStorage {
   static instance: StorageProvider;
   private data: Data = new Map();
   static loaded: boolean = false;
@@ -55,7 +59,7 @@ export class SyncStorage {
 
   checkIfLoaded() {
     if (SyncStorage.loaded) return;
-    throw Error("Sync Storage needs to be `init` first.");
+    throw Error("Sync Storage `init()` needs to be called before using it.");
   }
 }
 

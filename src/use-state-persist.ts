@@ -1,9 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 
-const storage = {
-  provider:
-}
-
 export const useAppState = <T>(key: string, value?: T): ReturnValues<T> => {
   const [state, setState] = useState<Value<T>>(value);
   const [isStale, setIsStale] = useState(true);
