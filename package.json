@@ -36,12 +36,14 @@
   "module": "dist/use-state-persist.esm.js",
   "devDependencies": {
     "@react-native-community/async-storage": "^1.10.3",
+    "@testing-library/react-hooks": "^3.2.1",
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "husky": "^4.2.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-native": "^0.62.2",
+    "react-test-renderer": "^16.13.1",
     "tsdx": "^0.13.2",
     "tslib": "^2.0.0",
     "typescript": "^3.9.3"

@@ -1,1 +1,3 @@
-export { useStatePersist } from './use-state-persist';
+import { useStatePersist } from './use-state-persist';
+
+export default useStatePersist;
