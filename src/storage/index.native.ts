@@ -40,10 +40,6 @@ class SyncStorage implements StorageProvider {
     return Array.from(this.data.keys());
   }
 
-  get length() {
-    return this.data.size;
-  }
-
   clear() {
     this.data.clear();
     AsyncStorage.clear();
