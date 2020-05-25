@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { StorageProvider, Data, StorageItem } from './types';
 
 class SyncStorage implements StorageProvider {
   static instance: SyncStorage;
@@ -12,7 +13,7 @@ class SyncStorage implements StorageProvider {
     return (SyncStorage.instance = new SyncStorage());
   }
 
-  async init() {
+  async ready() {
     if (SyncStorage.loaded) return;
     const keys = await AsyncStorage.getAllKeys();
     const storageData = await AsyncStorage.multiGet(keys);

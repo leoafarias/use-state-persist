@@ -1,8 +1,9 @@
 /// <reference lib="dom"/>
+import { StorageProvider } from './types';
 
 export const syncStorage: StorageProvider = {
   // Async function for compat with AsyncStorage
-  init: async () => {},
+  ready: async () => {},
   getItem: (key: string) => {
     return localStorage.getItem(key);
   },
