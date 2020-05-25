@@ -4,7 +4,7 @@ import { syncStorage } from '../src/storage';
 import { useState } from 'react';
 
 const payload = {
-  string: 'String',
+  string: 'Payload 1',
   nestedObject: {
     string: 'String Nested',
     object: {
@@ -14,6 +14,10 @@ const payload = {
     array: ['first', { object: 'Object' }],
   },
 };
+
+// function timeout(ms: number) {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 beforeAll(async () => {
   await syncStorage.ready();
@@ -28,7 +32,6 @@ test('Allows to add useStatePersist', async () => {
 
   // assert initial state
   expect(result.current[0]).toBe(undefined);
-  console.log('testState:', result.current[0]);
 
   act(() => {
     result.current[1](payload);
@@ -36,17 +39,32 @@ test('Allows to add useStatePersist', async () => {
 
   // assert new state
   expect(result.current[0]).toEqual(payload);
-
-  act(() => {
-    result.current[1](undefined);
-  });
-
-  expect(result.current[0]).toBe(undefined);
 });
 
-test('Can useStatePersist with a callback', async () => {
-  const { result } = renderHook(() => useStatePersist<number>('@count', 0));
-  const { result: stateResult } = renderHook(() => useState<number>(0));
+test('State persists', async () => {
+  const value = 'PERSISTED_STATE_VALUE';
+  const newValue = 'NEW_PERSISTED_STATE_VALUE';
+  syncStorage.setItem('@persistedState', JSON.stringify(value));
+  const { result } = renderHook(() => useStatePersist<any>('@persistedState'));
+
+  await syncStorage.ready();
+  // assert initial state
+  expect(result.current[0]).toBe(value);
+
+  act(() => {
+    result.current[1](newValue);
+  });
+
+  expect(result.current[0]).toBe(newValue);
+
+  // await timeout(100);
+  // const storedValue = syncStorage.getItem('@persistedState');
+  // expect(storedValue).toBe(JSON.stringify(newValue));
+});
+
+test('Behaves like useState', async () => {
+  const { result } = renderHook(() => useStatePersist('@count', 0));
+  const { result: stateResult } = renderHook(() => useState(0));
 
   // result.current[0] = state
   // result.current[1] = setState / updateState
@@ -62,10 +80,13 @@ test('Can useStatePersist with a callback', async () => {
 
   // assert new state
   expect(stateResult.current[0]).toEqual(1);
+  expect(result.current[0]).toEqual(1);
 
   act(() => {
     stateResult.current[1](6);
+    result.current[1](6);
   });
 
   expect(stateResult.current[0]).toBe(6);
+  expect(result.current[0]).toBe(6);
 });

@@ -1,16 +1,16 @@
 import {
   useEffect,
   useState,
-  SetStateAction,
   useCallback,
+  SetStateAction,
   Dispatch,
 } from 'react';
 import { syncStorage } from './storage';
 
-export const useStatePersist = <T = any>(
+export const useStatePersist = <T>(
   key: string,
   value?: T
-): [T | undefined, Dispatch<SetStateAction<T | undefined>>] => {
+): [T, Dispatch<SetStateAction<T>>] => {
   const [state, setState] = useState(value);
   const [isStale, setIsStale] = useState(!!!value);
 
@@ -23,7 +23,6 @@ export const useStatePersist = <T = any>(
   }, [state]);
 
   const loadInitialState = async () => {
-    await syncStorage.ready();
     const payload = syncStorage.getItem(key);
 
     if (payload && isStale) {
@@ -32,13 +31,13 @@ export const useStatePersist = <T = any>(
     }
   };
 
-  const updateState: React.Dispatch<SetStateAction<T | undefined>> = value => {
+  const updateState = (value: any) => {
     setIsStale(false);
     setState(value);
   };
 
   const handlePersist = useCallback(
-    async (state: T | undefined) => {
+    async (state: any) => {
       await syncStorage.ready();
       if (state === null || state === undefined) {
         syncStorage.removeItem(key);
@@ -49,5 +48,5 @@ export const useStatePersist = <T = any>(
     [isStale]
   );
 
-  return [state, updateState];
+  return [state as T, updateState as Dispatch<SetStateAction<T>>];
 };
