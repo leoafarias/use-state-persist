@@ -5,6 +5,8 @@ type KeyValue = {
   data: any;
 };
 
+export const keyName = () => faker.random.uuid();
+
 export const arrayOfRandomStorageItems = (): KeyValue[] => {
   const dataArray = arrayOfRandomData();
 

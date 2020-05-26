@@ -1,9 +1,9 @@
 import {
   useEffect,
   useState,
-  useCallback,
   SetStateAction,
   Dispatch,
+  useCallback,
 } from 'react';
 import { syncStorage } from './storage';
 
@@ -12,33 +12,46 @@ export const useStatePersist = <T>(
   value?: T
 ): [T, Dispatch<SetStateAction<T>>] => {
   const [state, setState] = useState(value);
-  const [isStale, setIsStale] = useState(!!!value);
 
   useEffect(() => {
-    const unsubscribe = syncStorage.subscribe(key, data => setState(data));
-    loadInitialState();
+    initialState();
+    // const unsubscribe = syncStorage.subscribe(key, (data: T) => {
+    //   setState(data);
+    // });
+
+    // return () => unsubscribe();
   }, []);
 
-  const loadInitialState = async () => {
+  const initialState = async () => {
     const data = syncStorage.getItem<T>(key);
 
-    if (data && isStale) {
+    if (data) {
       setState(data);
     }
   };
 
-  const updateState = (value: any) => {
-    setIsStale(false);
-    setState(value);
-    persistState(value);
-  };
+  const updateState = useCallback(
+    async (data: any) => {
+      await syncStorage.init();
+      const newState = JSON.stringify(data);
+      const currentState = JSON.stringify(state);
+      const storedState = JSON.stringify(syncStorage.getItem<T>(key));
 
-  const persistState = async (value: any) => {
-    await syncStorage.init();
-    if (value === null || value === undefined) {
+      if (newState === currentState) return;
+
+      setState(data);
+
+      if (newState === storedState) return;
+      handlePersist(data);
+    },
+    [state]
+  );
+
+  const handlePersist = async (data: any) => {
+    if (data === null || data === undefined) {
       syncStorage.removeItem(key);
     } else {
-      syncStorage.setItem(key, JSON.stringify(value));
+      syncStorage.setItem(key, data);
     }
   };
 

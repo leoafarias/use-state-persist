@@ -30,6 +30,18 @@ class BaseEvent<D, R> {
     }
   }
 
+  protected getCallbacks(eventName: string): ((data: D) => R)[] {
+    const callbacks: ((data: D) => R)[] = [];
+    const eventHandlers = this.handlerMap[eventName];
+    for (const key in eventHandlers) {
+      if (eventHandlers[key]) {
+        callbacks.push(eventHandlers[key]);
+      }
+    }
+
+    return callbacks;
+  }
+
   protected fireCallbacks(
     eventName: string,
     data: D,

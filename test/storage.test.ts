@@ -1,5 +1,5 @@
 import { syncStorage } from '../src/storage';
-import { arrayOfRandomStorageItems } from './utils';
+import { arrayOfRandomStorageItems, keyName } from './utils';
 
 beforeAll(async () => {
   await syncStorage.init();
@@ -37,4 +37,26 @@ test('Clears storage', async () => {
   expect(syncStorage.length).not.toEqual(0);
   syncStorage.clear();
   expect(syncStorage.length).toBe(0);
+});
+
+test('Data subscription works', async () => {
+  const key = keyName();
+  const storageData = 'String Value';
+  expect.hasAssertions();
+
+  const eventPromise = () => {
+    return new Promise(resolve => {
+      const callback = jest.fn((data: any) => {
+        expect(storageData).toEqual(data);
+        unsubscribe();
+        resolve();
+      });
+
+      const unsubscribe = syncStorage.subscribe(key, callback);
+
+      syncStorage.setItem(key, storageData);
+    });
+  };
+
+  await eventPromise();
 });

@@ -16,8 +16,8 @@ class SyncStorage implements StorageProvider {
   static loaded = true;
   async init() {}
 
-  get subscribe() {
-    return this.event.subscribe;
+  subscribe(key: string, callback: (data: any) => void) {
+    return this.event.subscribe(key, callback);
   }
 
   getItem<T>(key: string) {
@@ -29,7 +29,7 @@ class SyncStorage implements StorageProvider {
   setItem<T>(key: string, value: T) {
     if (!key) throw Error('No key provided');
     localStorage.setItem(key, JSON.stringify(value));
-    this.event.trigger(value);
+    this.event.trigger(key, value);
   }
 
   removeItem(key: string) {
