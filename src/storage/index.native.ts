@@ -1,11 +1,13 @@
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from '@react-native-community/async-storage';
+import { StorageProvider, Data, StorageItem } from './types';
+import { Event } from './event';
 
-export class SyncStorage {
-  static instance: StorageProvider;
+class SyncStorage implements StorageProvider {
+  static instance: SyncStorage;
   private data: Data = new Map();
-  static loaded: boolean = false;
+  private loaded = false;
 
-  private constructor() {}
+  private constructor(private event = new Event()) {}
 
   static getInstance() {
     if (SyncStorage.instance) return SyncStorage.instance;
@@ -13,11 +15,15 @@ export class SyncStorage {
   }
 
   async init() {
+    if (this.loaded) return;
     const keys = await AsyncStorage.getAllKeys();
     const storageData = await AsyncStorage.multiGet(keys);
-    storageData.forEach((item) => this.mapToMemory(item));
-    SyncStorage.loaded = true;
-    return SyncStorage.instance;
+    storageData.forEach(item => this.mapToMemory(item));
+    this.loaded = true;
+  }
+
+  subscribe(eventName: string, callback: (data: any) => void) {
+    return this.event.subscribe(eventName, callback);
   }
 
   getItem<T>(key: string) {
@@ -26,8 +32,9 @@ export class SyncStorage {
   }
 
   setItem<T>(key: string, value: T) {
-    if (!key) throw Error("No key provided");
+    if (!key) throw Error('No key provided');
     this.data.set(key, value);
+    this.event.trigger(key, value);
     AsyncStorage.setItem(key, JSON.stringify(value));
   }
 
@@ -40,22 +47,36 @@ export class SyncStorage {
     return Array.from(this.data.keys());
   }
 
-  private mapToMemory(item: KeyValue) {
-    const key = item[0];
-    let value = item[1] ?? null;
-
-    try {
-      if (value) value = JSON.parse(value);
-    } catch (e) {
-      [, value] = item;
-    }
-
-    this.data.set(key, value);
+  get length() {
+    return this.data.size;
   }
 
-  checkIfLoaded() {
-    if (SyncStorage.loaded) return;
-    throw Error("Sync Storage needs to be `init` first.");
+  clear() {
+    this.data.clear();
+    AsyncStorage.clear();
+  }
+
+  private mapToMemory(item: StorageItem) {
+    const key = item[0];
+    const value = item[1];
+
+    if (!value) return;
+
+    this.data.set(key, JSON.parse(value));
+  }
+
+  private checkIfLoaded() {
+    if (this.loaded) return;
+    throw Error('Sync Storage `init()` needs to be called before using it.');
+  }
+
+  // Used for testing
+  get _private() {
+    return {
+      mapToMemory: this.mapToMemory.bind(this),
+      checkIfLoaded: this.checkIfLoaded.bind(this),
+      loaded: this.loaded,
+    };
   }
 }
 

@@ -1,38 +1,59 @@
-import { useEffect, useState, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  SetStateAction,
+  Dispatch,
+  useCallback,
+} from 'react';
+import { syncStorage } from './storage';
 
-const storage = {
-  provider:
-}
+export const useStatePersist = <T>(
+  key: string,
+  value?: T
+): [T, Dispatch<SetStateAction<T>>] => {
+  const [state, setState] = useState(value);
 
-export const useAppState = <T>(key: string, value?: T): ReturnValues<T> => {
-  const [state, setState] = useState<Value<T>>(value);
-  const [isStale, setIsStale] = useState(true);
-
-  // Checks if value is stale
   useEffect(() => {
-    loadInitialState();
+    initialState();
+    // const unsubscribe = syncStorage.subscribe(key, (data: T) => {
+    //   setState(data);
+    // });
+
+    // return () => unsubscribe();
   }, []);
 
-  const loadInitialState = async () => {
-    setIsStale(value === undefined);
-    const payload = localStorage.getItem(key);
-    if (!payload) {
-      setState(undefined);
-      return;
+  const initialState = async () => {
+    const data = syncStorage.getItem<T>(key);
+
+    if (data) {
+      setState(data);
     }
-    const data: T = JSON.parse(payload);
-    setState(data);
   };
 
-  const setNewState = useCallback(
-    async (value: T) => {
-      setState(value);
-      setIsStale(false);
+  const updateState = useCallback(
+    async (data: any) => {
+      await syncStorage.init();
+      const newState = JSON.stringify(data);
+      const currentState = JSON.stringify(state);
+      const storedState = JSON.stringify(syncStorage.getItem<T>(key));
 
-      localStorage.setItem(key, JSON.stringify(value));
+      if (newState === currentState) return;
+
+      setState(data);
+
+      if (newState === storedState) return;
+      handlePersist(data);
     },
-    [setState]
+    [state]
   );
 
-  return [state, setNewState, isStale];
+  const handlePersist = async (data: any) => {
+    if (data === null || data === undefined) {
+      syncStorage.removeItem(key);
+    } else {
+      syncStorage.setItem(key, data);
+    }
+  };
+
+  return [state as T, updateState as Dispatch<SetStateAction<T>>];
 };
