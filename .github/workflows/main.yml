@@ -35,6 +35,11 @@ jobs:
         run: yarn test --ci --coverage --maxWorkers=2
         env:
           CI: true
+      
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: yarn build
