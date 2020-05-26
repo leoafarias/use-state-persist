@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1590517452585" clover="3.2.0">
+  <project timestamp="1590517452585" name="All files">
+    <metrics statements="101" coveredstatements="98" conditionals="41" coveredconditionals="29" methods="38" coveredmethods="36" elements="180" coveredelements="163" complexity="0" loc="101" ncloc="101" packages="2" files="5" classes="5"/>
+    <package name="src">
+      <metrics statements="23" coveredstatements="23" conditionals="8" coveredconditionals="8" methods="6" coveredmethods="6"/>
+      <file name="index.ts" path="/Users/leofarias/Projects/use-state-persist/src/index.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="use-state-persist.ts" path="/Users/leofarias/Projects/use-state-persist/src/use-state-persist.ts">
+        <metrics statements="22" coveredstatements="22" conditionals="8" coveredconditionals="8" methods="6" coveredmethods="6"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="14" count="8" type="stmt"/>
+        <line num="15" count="8" type="stmt"/>
+        <line num="17" count="8" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="21" count="8" type="stmt"/>
+        <line num="22" count="8" type="stmt"/>
+        <line num="25" count="8" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="28" count="3" type="cond" truecount="4" falsecount="0"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="33" count="8" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="38" count="8" type="stmt"/>
+        <line num="40" count="8" type="stmt"/>
+        <line num="41" count="8" type="cond" truecount="4" falsecount="0"/>
+        <line num="42" count="2" type="stmt"/>
+        <line num="44" count="6" type="stmt"/>
+        <line num="50" count="8" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.storage">
+      <metrics statements="78" coveredstatements="75" conditionals="33" coveredconditionals="21" methods="32" coveredmethods="30"/>
+      <file name="event.ts" path="/Users/leofarias/Projects/use-state-persist/src/storage/event.ts">
+        <metrics statements="27" coveredstatements="25" conditionals="15" coveredconditionals="9" methods="8" coveredmethods="8"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="8" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="28" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="38" count="1410" type="stmt"/>
+        <line num="39" count="1410" type="stmt"/>
+        <line num="41" count="1410" type="stmt"/>
+        <line num="42" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="51" count="1410" type="cond" truecount="2" falsecount="0"/>
+        <line num="59" count="3" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="64" count="3" type="stmt"/>
+        <line num="65" count="1410" type="stmt"/>
+      </file>
+      <file name="index.native.ts" path="/Users/leofarias/Projects/use-state-persist/src/storage/index.native.ts">
+        <metrics statements="33" coveredstatements="33" conditionals="11" coveredconditionals="7" methods="14" coveredmethods="13"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="13" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="18" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="30" count="703" type="stmt"/>
+        <line num="31" count="702" type="stmt"/>
+        <line num="35" count="702" type="cond" truecount="1" falsecount="1"/>
+        <line num="36" count="702" type="stmt"/>
+        <line num="37" count="702" type="stmt"/>
+        <line num="38" count="702" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="51" count="2" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="63" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="69" count="703" type="cond" truecount="2" falsecount="0"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="75" count="3" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+      </file>
+      <file name="index.ts" path="/Users/leofarias/Projects/use-state-persist/src/storage/index.ts">
+        <metrics statements="18" coveredstatements="17" conditionals="7" coveredconditionals="5" methods="10" coveredmethods="9"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="8" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="11" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="24" count="705" type="stmt"/>
+        <line num="25" count="705" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="702" type="stmt"/>
+        <line num="30" count="708" type="cond" truecount="1" falsecount="1"/>
+        <line num="31" count="708" type="stmt"/>
+        <line num="32" count="708" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="46" count="2" type="stmt"/>
+        <line num="48" count="2" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

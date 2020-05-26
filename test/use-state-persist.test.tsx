@@ -20,7 +20,7 @@ const payload = {
 // }
 
 beforeAll(async () => {
-  await syncStorage.ready();
+  await syncStorage.init();
   syncStorage.clear();
 });
 
@@ -44,10 +44,9 @@ test('Allows to add useStatePersist', async () => {
 test('State persists', async () => {
   const value = 'PERSISTED_STATE_VALUE';
   const newValue = 'NEW_PERSISTED_STATE_VALUE';
-  syncStorage.setItem('@persistedState', JSON.stringify(value));
+  syncStorage.setItem('@persistedState', value);
   const { result } = renderHook(() => useStatePersist<any>('@persistedState'));
 
-  await syncStorage.ready();
   // assert initial state
   expect(result.current[0]).toBe(value);
 
@@ -56,10 +55,6 @@ test('State persists', async () => {
   });
 
   expect(result.current[0]).toBe(newValue);
-
-  // await timeout(100);
-  // const storedValue = syncStorage.getItem('@persistedState');
-  // expect(storedValue).toBe(JSON.stringify(newValue));
 });
 
 test('Behaves like useState', async () => {

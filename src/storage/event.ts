@@ -1,51 +1,48 @@
 class BaseEvent<D, R> {
-  private handlerMap: { [key: number]: (data: D) => R } = {};
-  private currentIndex = 0;
+  private currentIndex: { [eventName: string]: number } = {};
+  private handlerMap: {
+    [eventName: string]: { [key: number]: (data: D) => R };
+  } = {};
 
-  protected add(callback: (data: D) => R): number {
+  protected add(eventName: string, callback: (data: D) => R): number {
     if (!callback) {
       throw new Error('No callback specified.');
     }
+    const eventHandlers = this.handlerMap[eventName]
+      ? this.handlerMap[eventName]
+      : {};
+    const currentIndex = this.currentIndex[eventName]
+      ? this.currentIndex[eventName]
+      : 0;
 
     try {
-      this.handlerMap[this.currentIndex] = callback;
-      return this.currentIndex;
+      eventHandlers[currentIndex] = callback;
+      this.handlerMap[eventName] = eventHandlers;
+      return currentIndex;
     } finally {
-      this.currentIndex++;
+      this.currentIndex[eventName] = currentIndex + 1;
     }
   }
 
-  protected remove(handler: number): void {
-    if (this.handlerMap[handler]) {
-      delete this.handlerMap[handler];
+  protected remove(eventName: string, handler: number): void {
+    if (this.handlerMap[eventName][handler]) {
+      delete this.handlerMap[eventName][handler];
     }
   }
 
-  protected removeAll(): void {
-    this.handlerMap = {};
-  }
-
-  protected getCallbacks(): ((data: D) => R)[] {
-    const callbacks: ((data: D) => R)[] = [];
-
-    for (const key in this.handlerMap) {
-      if (this.handlerMap[key]) {
-        callbacks.push(this.handlerMap[key]);
-      }
-    }
-
-    return callbacks;
-  }
-
-  protected getResult(
+  protected fireCallbacks(
+    eventName: string,
     data: D,
     defaultValueOfCallback: R | undefined = undefined
   ): R | undefined {
     let hadCallbacks = false;
-    for (const key in this.handlerMap) {
-      if (this.handlerMap[key]) {
+    const handlers = this.handlerMap[eventName];
+
+    for (const key in handlers) {
+      if (handlers[key]) {
         hadCallbacks = true;
-        const result = this.handlerMap[key](data);
+
+        const result = handlers[key](data);
         if (result) {
           return result;
         }
@@ -55,14 +52,15 @@ class BaseEvent<D, R> {
   }
 }
 
-export interface EventInterface {
-  on(callback: () => void): number;
-  off(handle: number): void;
-  trigger(): void;
+export interface EventInterface<D> {
+  subscribe(eventName: string, callback: (data: D) => void): () => void;
+  trigger(eventName: string, data: D): void;
 }
-
-export class Event extends BaseEvent<void, void> implements EventInterface {
-  on = (callback: () => void): number => super.add(callback);
-  off = (handler: number): void => super.remove(handler);
-  trigger = (): void => super.getResult(undefined);
+export class Event<D> extends BaseEvent<D, void> implements EventInterface<D> {
+  subscribe(eventName: string, callback: (data: D) => void): () => void {
+    const handle = super.add(eventName, callback);
+    return () => super.remove(eventName, handle);
+  }
+  trigger = (eventName: string, data: D): void =>
+    super.fireCallbacks(eventName, data);
 }
