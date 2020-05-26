@@ -1,5 +1,7 @@
 # Use State Persist
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9b1c2ea8d9c84c2bb37a49b2adce88a5)](https://app.codacy.com/manual/leo/use-state-persist?utm_source=github.com&utm_medium=referral&utm_content=leoafarias/use-state-persist&utm_campaign=Badge_Grade_Dashboard)
+
 A simple React Hook to persist **useState** in local storage.
 
 Works on the `Web` and `React Native`.
