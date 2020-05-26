@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { useStatePersist } from '../src';
 import { syncStorage } from '../src/storage';
 import { useState } from 'react';
+import { keyName } from './utils';
 
 const payload = {
   string: 'Payload 1',
@@ -20,16 +21,18 @@ const payload = {
 // }
 
 beforeAll(async () => {
-  await syncStorage.ready();
+  await syncStorage.init();
   syncStorage.clear();
 });
 
 test('Allows to add useStatePersist', async () => {
-  const { result } = renderHook(() => useStatePersist<any>('@stateKey'));
+  const key = keyName();
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useStatePersist<any>(key)
+  );
 
   // result.current[0] = state
   // result.current[1] = setState / updateState
-
   // assert initial state
   expect(result.current[0]).toBe(undefined);
 
@@ -37,17 +40,23 @@ test('Allows to add useStatePersist', async () => {
     result.current[1](payload);
   });
 
+  await waitForNextUpdate();
+
   // assert new state
   expect(result.current[0]).toEqual(payload);
 });
 
 test('State persists', async () => {
+  const key = keyName();
   const value = 'PERSISTED_STATE_VALUE';
   const newValue = 'NEW_PERSISTED_STATE_VALUE';
-  syncStorage.setItem('@persistedState', JSON.stringify(value));
-  const { result } = renderHook(() => useStatePersist<any>('@persistedState'));
 
-  await syncStorage.ready();
+  act(() => {
+    syncStorage.setItem(key, value);
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() => useStatePersist(key));
+
   // assert initial state
   expect(result.current[0]).toBe(value);
 
@@ -55,15 +64,16 @@ test('State persists', async () => {
     result.current[1](newValue);
   });
 
-  expect(result.current[0]).toBe(newValue);
+  await waitForNextUpdate();
 
-  // await timeout(100);
-  // const storedValue = syncStorage.getItem('@persistedState');
-  // expect(storedValue).toBe(JSON.stringify(newValue));
+  expect(result.current[0]).toBe(newValue);
 });
 
 test('Behaves like useState', async () => {
-  const { result } = renderHook(() => useStatePersist('@count', 0));
+  const key = keyName();
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useStatePersist(key, 0)
+  );
   const { result: stateResult } = renderHook(() => useState(0));
 
   // result.current[0] = state
@@ -78,6 +88,7 @@ test('Behaves like useState', async () => {
     result.current[1](count => count + 1);
   });
 
+  await waitForNextUpdate();
   // assert new state
   expect(stateResult.current[0]).toEqual(1);
   expect(result.current[0]).toEqual(1);
@@ -86,6 +97,8 @@ test('Behaves like useState', async () => {
     stateResult.current[1](6);
     result.current[1](6);
   });
+
+  await waitForNextUpdate();
 
   expect(stateResult.current[0]).toBe(6);
   expect(result.current[0]).toBe(6);
