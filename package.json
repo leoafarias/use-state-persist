@@ -1,7 +1,7 @@
 {
   "name": "use-state-persist",
   "author": "leoafarias",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "main": "dist/index.js",
   "react-native": "build/index.js",
@@ -22,7 +22,7 @@
     "test:coverage": "tsdx test --passWithNoTests --coverage",
     "test:watch": "yarn test:coverage --watch",
     "lint": "tsdx lint",
-    "postinstall": "tsdx build && yarn build:native"
+    "prepare": "tsdx build && yarn build:native"
   },
   "peerDependencies": {
     "react": ">=16"
