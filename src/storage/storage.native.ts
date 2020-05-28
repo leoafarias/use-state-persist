@@ -10,6 +10,7 @@ class SyncStorage implements StorageProvider {
   private constructor(private event = new Event()) {}
 
   static getInstance() {
+    console.error('IT WORKED');
     if (SyncStorage.instance) return SyncStorage.instance;
     return (SyncStorage.instance = new SyncStorage());
   }

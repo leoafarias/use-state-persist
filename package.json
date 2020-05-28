@@ -1,9 +1,10 @@
 {
   "name": "use-state-persist",
   "author": "leoafarias",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "license": "MIT",
   "main": "dist/index.js",
+  "react-native": "build/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -15,11 +16,12 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
+    "build:native": "tsc -b",
     "test": "tsdx test --passWithNoTests",
     "test:coverage": "tsdx test --passWithNoTests --coverage",
     "test:watch": "yarn test:coverage --watch",
     "lint": "tsdx lint",
-    "prepare": "tsdx build"
+    "prepare": "tsdx build && yarn build:native"
   },
   "peerDependencies": {
     "react": ">=16"
