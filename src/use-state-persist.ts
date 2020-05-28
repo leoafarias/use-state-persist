@@ -23,6 +23,7 @@ export const useStatePersist = <T>(
   }, []);
 
   const initialState = async () => {
+    await syncStorage.init();
     const data = syncStorage.getItem<T>(key);
 
     if (data) {
@@ -48,6 +49,7 @@ export const useStatePersist = <T>(
   );
 
   const handlePersist = async (data: any) => {
+    syncStorage.init();
     if (data === null || data === undefined) {
       syncStorage.removeItem(key);
     } else {

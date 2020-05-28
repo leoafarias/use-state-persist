@@ -23,7 +23,15 @@ class SyncStorage implements StorageProvider {
   getItem<T>(key: string) {
     const value = localStorage.getItem(key);
     if (!value) return;
-    return JSON.parse(value) as T;
+
+    let data = value;
+    try {
+      data = JSON.parse(value);
+    } catch (err) {
+      data = value;
+    }
+
+    return (data as unknown) as T;
   }
 
   setItem<T>(key: string, value: T) {

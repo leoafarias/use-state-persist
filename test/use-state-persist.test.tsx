@@ -56,7 +56,7 @@ test('State persists', async () => {
   });
 
   const { result, waitForNextUpdate } = renderHook(() => useStatePersist(key));
-
+  await waitForNextUpdate();
   // assert initial state
   expect(result.current[0]).toBe(value);
 
