@@ -1,15 +1,15 @@
 {
   "name": "use-state-persist",
   "author": "leoafarias",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "main": "dist/index.js",
   "react-native": "build/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "tsconfig.json"
+    "build",
+    "src"
   ],
   "engines": {
     "node": ">=10"
