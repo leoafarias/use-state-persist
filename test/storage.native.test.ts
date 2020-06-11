@@ -1,4 +1,4 @@
-import { arrayOfRandomStorageItems } from './utils';
+import { arrayOfRandomStorageItems, keyName } from './utils';
 // @ts-ignore: Unreachable code error
 import MockAsyncStorage from 'mock-async-storage';
 import { syncStorage } from '../src/storage/index.native';
@@ -71,10 +71,11 @@ test('Clears storage', async () => {
 });
 
 test('Data subscription works', async () => {
-  const storageData = 'String Value';
-  expect.hasAssertions();
+  const key = keyName();
+  let storageData = 'String Value';
+  expect.assertions(2);
 
-  const eventPromise = () => {
+  const setItemPromise = () => {
     return new Promise(resolve => {
       const callback = jest.fn((data: any) => {
         expect(storageData).toEqual(data);
@@ -82,20 +83,25 @@ test('Data subscription works', async () => {
         resolve();
       });
 
-      const unsubscribe = syncStorage.subscribe('@eventKey', callback);
+      const unsubscribe = syncStorage.subscribe(key, callback);
 
-      syncStorage.setItem('@eventKey', storageData);
+      syncStorage.setItem(key, storageData);
     });
   };
 
-  await eventPromise();
-});
+  const removeItemPromise = () => {
+    return new Promise(resolve => {
+      const callback = jest.fn((data: any) => {
+        expect(data).toBe(undefined);
+        unsubscribe();
+        resolve();
+      });
 
-test('Removes item', async () => {
-  const value = 'Value of String';
-  syncStorage.setItem('@key', value);
+      const unsubscribe = syncStorage.subscribe(key, callback);
 
-  expect(syncStorage.getItem('@key')).toEqual(value);
-  syncStorage.removeItem('@key');
-  expect(syncStorage.getItem('@key')).toEqual(undefined);
+      syncStorage.removeItem(key);
+    });
+  };
+  await setItemPromise();
+  await removeItemPromise();
 });

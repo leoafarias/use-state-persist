@@ -39,12 +39,20 @@ test('Clears storage', async () => {
   expect(syncStorage.length).toBe(0);
 });
 
+test('Gets allKeys', async () => {
+  syncStorage.setItem('@key1', '');
+  syncStorage.setItem('@key2', '');
+  const results = ['@key1', '@key2'];
+  expect(syncStorage.getAllKeys()).toEqual(results);
+  syncStorage.clear();
+});
+
 test('Data subscription works', async () => {
   const key = keyName();
-  const storageData = 'String Value';
-  expect.hasAssertions();
+  let storageData = 'String Value';
+  expect.assertions(2);
 
-  const eventPromise = () => {
+  const setItemPromise = () => {
     return new Promise(resolve => {
       const callback = jest.fn((data: any) => {
         expect(storageData).toEqual(data);
@@ -58,5 +66,19 @@ test('Data subscription works', async () => {
     });
   };
 
-  await eventPromise();
+  const removeItemPromise = () => {
+    return new Promise(resolve => {
+      const callback = jest.fn((data: any) => {
+        expect(data).toBe(undefined);
+        unsubscribe();
+        resolve();
+      });
+
+      const unsubscribe = syncStorage.subscribe(key, callback);
+
+      syncStorage.removeItem(key);
+    });
+  };
+  await setItemPromise();
+  await removeItemPromise();
 });

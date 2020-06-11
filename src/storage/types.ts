@@ -1,3 +1,4 @@
+import { Event } from './event';
 export type Key = string;
 export type StorageItem = [Key, string | null];
 export type Data = Map<string, any>;
@@ -9,3 +10,7 @@ export interface StorageProvider {
   clear(): void;
   length: number;
 }
+
+export type StorageEvents = {
+  [key: string]: Event<any>;
+};

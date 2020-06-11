@@ -7,23 +7,43 @@ import {
 } from 'react';
 import { syncStorage } from './storage';
 
+export const storageNamespace = '@useStatePerist:';
+
+export const clearState = async () => {
+  await syncStorage.init();
+  const keys = syncStorage.getAllKeys();
+  keys.forEach(k => {
+    if (k.startsWith(storageNamespace)) {
+      syncStorage.removeItem(k);
+    }
+  });
+};
+
 export const useStatePersist = <T>(
   key: string,
   value?: T
 ): [T, Dispatch<SetStateAction<T>>] => {
   const [state, setState] = useState(value);
 
+  // Storage namespace
+  const storageKey = storageNamespace + key;
+
   useEffect(() => {
     initialState();
-    // const unsubscribe = syncStorage.subscribe(key, (data: T) => {
-    //   setState(data);
-    // });
+    const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
+      if (!data) {
+        setState(undefined);
+      } else {
+        setState(data);
+      }
+    });
 
-    // return () => unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const initialState = async () => {
-    const data = syncStorage.getItem<T>(key);
+    await syncStorage.init();
+    const data = syncStorage.getItem<T>(storageKey);
 
     if (data) {
       setState(data);
@@ -35,12 +55,12 @@ export const useStatePersist = <T>(
       await syncStorage.init();
       const newState = JSON.stringify(data);
       const currentState = JSON.stringify(state);
-      const storedState = JSON.stringify(syncStorage.getItem<T>(key));
+      const storedState = JSON.stringify(syncStorage.getItem<T>(storageKey));
 
       if (newState === currentState) return;
-
       setState(data);
 
+      // Do not store if already saved
       if (newState === storedState) return;
       handlePersist(data);
     },
@@ -49,9 +69,9 @@ export const useStatePersist = <T>(
 
   const handlePersist = async (data: any) => {
     if (data === null || data === undefined) {
-      syncStorage.removeItem(key);
+      syncStorage.removeItem(storageKey);
     } else {
-      syncStorage.setItem(key, data);
+      syncStorage.setItem(storageKey, data);
     }
   };
 

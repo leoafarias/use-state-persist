@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useStatePersist } from '../src';
+import { useStatePersist, clearState, storageNamespace } from '../src';
 import { syncStorage } from '../src/storage';
 import { useState } from 'react';
 import { keyName } from './utils';
@@ -16,13 +16,9 @@ const payload = {
   },
 };
 
-// function timeout(ms: number) {
-//   return new Promise(resolve => setTimeout(resolve, ms));
-// }
-
 beforeAll(async () => {
   await syncStorage.init();
-  syncStorage.clear();
+  await syncStorage.clear();
 });
 
 test('Allows to add useStatePersist', async () => {
@@ -31,8 +27,6 @@ test('Allows to add useStatePersist', async () => {
     useStatePersist<any>(key)
   );
 
-  // result.current[0] = state
-  // result.current[1] = setState / updateState
   // assert initial state
   expect(result.current[0]).toBe(undefined);
 
@@ -52,7 +46,7 @@ test('State persists', async () => {
   const newValue = 'NEW_PERSISTED_STATE_VALUE';
 
   act(() => {
-    syncStorage.setItem(key, value);
+    syncStorage.setItem(storageNamespace + key, value);
   });
 
   const { result, waitForNextUpdate } = renderHook(() => useStatePersist(key));
@@ -75,9 +69,6 @@ test('Behaves like useState', async () => {
     useStatePersist(key, 0)
   );
   const { result: stateResult } = renderHook(() => useState(0));
-
-  // result.current[0] = state
-  // result.current[1] = setState / updateState
 
   // assert initial state
   expect(stateResult.current[0]).toBe(0);
@@ -102,4 +93,35 @@ test('Behaves like useState', async () => {
 
   expect(stateResult.current[0]).toBe(6);
   expect(result.current[0]).toBe(6);
+});
+
+test('Clears state', async () => {
+  syncStorage.setItem(storageNamespace + '@one', '');
+  syncStorage.setItem(storageNamespace + '@two', '');
+  let keys = syncStorage.getAllKeys();
+  expect(keys.length).toBeGreaterThan(0);
+
+  await clearState();
+  keys = syncStorage.getAllKeys();
+  expect(keys.length).toBe(0);
+
+  const key = keyName();
+  const value = 'CLEAR_STATE_VALUE';
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useStatePersist(key, value)
+  );
+
+  expect(result.current[0]).toEqual(value);
+
+  await act(async () => {
+    // syncStorage.removeItem(storageNamespace + key);
+    clearState();
+    await waitForNextUpdate();
+  });
+
+  // await waitForValueToChange(() => {
+  //   return result.current[0];
+  // });
+
+  expect(result.current[0]).toEqual(undefined);
 });
