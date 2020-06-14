@@ -80,3 +80,24 @@ const ShowCounter = () => {
   return <CounterDisplay value={counter} />;
 };
 ```
+
+## Cache Invalidation
+
+There are some cases where you might want to clear all the local storage cache for the hook, pending a certain change in state in the app.
+
+This will clear all the local storage items use by the `useStatePersist` hook when the key changes.
+
+### Use Cases
+
+- User/App State changes
+- User Log out
+- Environment variable changes
+
+```tsx
+import { invalidateCache } from 'use-state-persist';
+
+invalidateCache('CACHE_KEY');
+
+// You can also send a promise which will compare the result
+invalidateCache(async () => 'CACHE_KEY');
+```

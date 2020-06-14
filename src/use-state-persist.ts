@@ -7,18 +7,7 @@ import {
 } from 'react';
 import { isFunction } from './utils';
 import { syncStorage } from './storage';
-
-export const storageNamespace = '@useStatePerist:';
-
-export const clearState = async () => {
-  await syncStorage.init();
-  const keys = syncStorage.getAllKeys();
-  keys.forEach(k => {
-    if (k.startsWith(storageNamespace)) {
-      syncStorage.removeItem(k);
-    }
-  });
-};
+import { storageNamespace } from './constants';
 
 export const useStatePersist = <T>(
   key: string,
@@ -32,52 +21,49 @@ export const useStatePersist = <T>(
   useEffect(() => {
     initialState();
     const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
-      if (!data) {
-        setState(data);
-      } else {
-        setState(data);
-      }
+      setState(data);
     });
 
     return () => unsubscribe();
+    // eslint-disable-next-line
   }, []);
 
   const initialState = async () => {
     await syncStorage.init();
     const data = syncStorage.getItem<T>(storageKey);
-
     setState(data);
+  };
+
+  const handlePersist = async (data: any) => {
+    if (!data) {
+      syncStorage.removeItem(storageKey);
+    } else {
+      syncStorage.setItem(storageKey, data);
+    }
   };
 
   const updateState = useCallback(
     async (data: any | ((prevState: T) => T)) => {
+      await syncStorage.init();
       let value = data;
       // Could be an anonymous function
       if (isFunction(data)) value = data(state);
 
-      await syncStorage.init();
       const newState = JSON.stringify(value);
       const currentState = JSON.stringify(state);
       const storedState = JSON.stringify(syncStorage.getItem<T>(storageKey));
 
       if (newState === currentState) return;
+
       setState(value);
 
       // Do not store if already saved
       if (newState === storedState) return;
       handlePersist(value);
     },
+    // eslint-disable-next-line
     [state]
   );
-
-  const handlePersist = async (data: any) => {
-    syncStorage.init();
-    if (data === null || data === undefined) {
-      syncStorage.removeItem(storageKey);
-    } else {
-      syncStorage.setItem(storageKey, data);
-    }
-  };
 
   return [state as T, updateState as Dispatch<SetStateAction<T>>];
 };
