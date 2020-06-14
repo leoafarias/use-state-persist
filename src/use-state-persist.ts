@@ -60,12 +60,21 @@ export const useStatePersist = <T>(
     });
 
     return () => unsubscribe();
+    // eslint-disable-next-line
   }, []);
 
   const initialState = async () => {
     await syncStorage.init();
     const data = syncStorage.getItem<T>(storageKey);
     setState(data);
+  };
+
+  const handlePersist = async (data: any) => {
+    if (!data) {
+      syncStorage.removeItem(storageKey);
+    } else {
+      syncStorage.setItem(storageKey, data);
+    }
   };
 
   const updateState = useCallback(
@@ -87,16 +96,9 @@ export const useStatePersist = <T>(
       if (newState === storedState) return;
       handlePersist(value);
     },
+    // eslint-disable-next-line
     [state]
   );
-
-  const handlePersist = async (data: any) => {
-    if (!data) {
-      syncStorage.removeItem(storageKey);
-    } else {
-      syncStorage.setItem(storageKey, data);
-    }
-  };
 
   return [state as T, updateState as Dispatch<SetStateAction<T>>];
 };
