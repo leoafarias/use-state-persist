@@ -1,10 +1,7 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import {
-  useStatePersist,
-  clearState,
-  storageNamespace,
-  invalidateCache,
-} from '../src';
+import { useStatePersist } from '../src';
+import { invalidateCache, clearState } from '../src/cache';
+import { storageNamespace } from '../src/constants';
 import { syncStorage } from '../src/storage';
 import { useState } from 'react';
 import { keyName } from './utils';
