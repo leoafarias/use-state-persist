@@ -18,7 +18,7 @@ const payload = {
 
 beforeAll(async () => {
   await syncStorage.init();
-  await syncStorage.clear();
+  syncStorage.clear();
 });
 
 test('Allows to add useStatePersist', async () => {
@@ -45,11 +45,11 @@ test('State persists', async () => {
   const value = 'PERSISTED_STATE_VALUE';
   const newValue = 'NEW_PERSISTED_STATE_VALUE';
 
-  act(() => {
-    syncStorage.setItem(storageNamespace + key, value);
-  });
+  syncStorage.setItem(storageNamespace + key, value);
 
   const { result, waitForNextUpdate } = renderHook(() => useStatePersist(key));
+
+  await waitForNextUpdate();
 
   // assert initial state
   expect(result.current[0]).toBe(value);

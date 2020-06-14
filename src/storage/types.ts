@@ -8,6 +8,7 @@ export interface StorageProvider {
   setItem(key: string, value: any): void;
   removeItem(key: string): void;
   clear(): void;
+  getAllKeys(): string[];
   length: number;
 }
 

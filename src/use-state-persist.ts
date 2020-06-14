@@ -5,6 +5,7 @@ import {
   Dispatch,
   useCallback,
 } from 'react';
+import { isFunction } from './utils';
 import { syncStorage } from './storage';
 
 export const storageNamespace = '@useStatePerist:';
@@ -32,7 +33,7 @@ export const useStatePersist = <T>(
     initialState();
     const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
       if (!data) {
-        setState(undefined);
+        setState(data);
       } else {
         setState(data);
       }
@@ -45,24 +46,26 @@ export const useStatePersist = <T>(
     await syncStorage.init();
     const data = syncStorage.getItem<T>(storageKey);
 
-    if (data) {
-      setState(data);
-    }
+    setState(data);
   };
 
   const updateState = useCallback(
-    async (data: any) => {
+    async (data: any | ((prevState: T) => T)) => {
+      let value = data;
+      // Could be an anonymous function
+      if (isFunction(data)) value = data(state);
+
       await syncStorage.init();
-      const newState = JSON.stringify(data);
+      const newState = JSON.stringify(value);
       const currentState = JSON.stringify(state);
       const storedState = JSON.stringify(syncStorage.getItem<T>(storageKey));
 
       if (newState === currentState) return;
-      setState(data);
+      setState(value);
 
       // Do not store if already saved
       if (newState === storedState) return;
-      handlePersist(data);
+      handlePersist(value);
     },
     [state]
   );
