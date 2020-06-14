@@ -11,16 +11,20 @@ import { syncStorage } from './storage';
 export const storageNamespace = '@useStatePerist:';
 const cacheKey = '@useStatePersistCacheKey';
 
-export const invalidateCache = (invalidateKey: string | (() => string)) => {
-  let value = invalidateKey;
+export const invalidateCache = async (
+  invalidateKey: string | (() => Promise<string>)
+) => {
+  let value: string;
   if (isFunction(invalidateKey)) {
-    value = (invalidateKey as () => string)();
+    value = await (invalidateKey as () => Promise<string>)();
+  } else {
+    value = invalidateKey as string;
   }
-  checkAndInvalidate(value as string);
+  await checkAndInvalidate(value);
 };
 
 // Need to be async to make sure storage is initialized
-const checkAndInvalidate = async (invalidateKey: string) => {
+export const checkAndInvalidate = async (invalidateKey: string) => {
   await syncStorage.init();
   const key = syncStorage.getItem(cacheKey);
   if (invalidateKey !== key) {
@@ -31,6 +35,7 @@ const checkAndInvalidate = async (invalidateKey: string) => {
 
 export const clearState = async () => {
   await syncStorage.init();
+
   const keys = syncStorage.getAllKeys();
   keys.forEach(k => {
     if (k.startsWith(storageNamespace)) {
@@ -51,11 +56,7 @@ export const useStatePersist = <T>(
   useEffect(() => {
     initialState();
     const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
-      if (!data) {
-        setState(data);
-      } else {
-        setState(data);
-      }
+      setState(data);
     });
 
     return () => unsubscribe();
@@ -69,16 +70,17 @@ export const useStatePersist = <T>(
 
   const updateState = useCallback(
     async (data: any | ((prevState: T) => T)) => {
+      await syncStorage.init();
       let value = data;
       // Could be an anonymous function
       if (isFunction(data)) value = data(state);
 
-      await syncStorage.init();
       const newState = JSON.stringify(value);
       const currentState = JSON.stringify(state);
       const storedState = JSON.stringify(syncStorage.getItem<T>(storageKey));
 
       if (newState === currentState) return;
+
       setState(value);
 
       // Do not store if already saved
@@ -89,7 +91,7 @@ export const useStatePersist = <T>(
   );
 
   const handlePersist = async (data: any) => {
-    if (data === null || data === undefined) {
+    if (!data) {
       syncStorage.removeItem(storageKey);
     } else {
       syncStorage.setItem(storageKey, data);

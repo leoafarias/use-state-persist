@@ -38,7 +38,7 @@ test('Checks if loads', async () => {
 });
 
 test('Stores Values and retrieves', async () => {
-  let results: any = true;
+  let results = true;
   // assert new state
   const dataArray = arrayOfRandomStorageItems();
   dataArray.forEach(item => {
@@ -46,9 +46,7 @@ test('Stores Values and retrieves', async () => {
 
     const value = syncStorage.getItem(item.key);
 
-    if (JSON.stringify(value) !== JSON.stringify(item.data)) {
-      results = value;
-    }
+    results = JSON.stringify(value) === JSON.stringify(item.data);
   });
 
   expect(results).toBe(true);
