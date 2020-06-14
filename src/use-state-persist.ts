@@ -9,6 +9,25 @@ import { isFunction } from './utils';
 import { syncStorage } from './storage';
 
 export const storageNamespace = '@useStatePerist:';
+const cacheKey = '@useStatePersistCacheKey';
+
+export const invalidateCache = (invalidateKey: string | (() => string)) => {
+  let value = invalidateKey;
+  if (isFunction(invalidateKey)) {
+    value = (invalidateKey as () => string)();
+  }
+  checkAndInvalidate(value as string);
+};
+
+// Need to be async to make sure storage is initialized
+const checkAndInvalidate = async (invalidateKey: string) => {
+  await syncStorage.init();
+  const key = syncStorage.getItem(cacheKey);
+  if (invalidateKey !== key) {
+    await clearState();
+    syncStorage.setItem(cacheKey, invalidateKey);
+  }
+};
 
 export const clearState = async () => {
   await syncStorage.init();
@@ -45,7 +64,6 @@ export const useStatePersist = <T>(
   const initialState = async () => {
     await syncStorage.init();
     const data = syncStorage.getItem<T>(storageKey);
-
     setState(data);
   };
 

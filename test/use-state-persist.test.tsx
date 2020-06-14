@@ -80,6 +80,7 @@ test('Behaves like useState', async () => {
   });
 
   await waitForNextUpdate();
+
   // assert new state
   expect(stateResult.current[0]).toEqual(1);
   expect(result.current[0]).toEqual(1);
