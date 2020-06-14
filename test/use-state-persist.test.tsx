@@ -147,7 +147,7 @@ test('Clears state', async () => {
   expect(result.current[0]).toEqual(undefined);
 });
 
-describe('Cache Invalidation', () => {
+describe('Cache Invalidation with key', () => {
   const key1 = storageNamespace + '@cacheInvalidate1';
   const key2 = storageNamespace + '@cacheInvalidate2';
   test('Invalidates without initial key', async () => {
@@ -173,6 +173,24 @@ describe('Cache Invalidation', () => {
     expect(syncStorage.getItem(key2)).toEqual('VALUE2');
 
     await invalidateCache('NEW_CACHE_KEY');
+    // invalidateCache('CACHE_KEY');
+
+    expect(syncStorage.getItem(key1)).toBeUndefined();
+    expect(syncStorage.getItem(key2)).toBeUndefined();
+  });
+
+  test('Can send promise to invalidate cache', async () => {
+    await invalidateCache('INITIAL_KEY');
+    syncStorage.setItem(key1, 'VALUE1');
+    syncStorage.setItem(key2, 'VALUE2');
+
+    // Check that values exist
+    expect(syncStorage.getItem(key1)).toEqual('VALUE1');
+    expect(syncStorage.getItem(key2)).toEqual('VALUE2');
+
+    await invalidateCache(
+      () => new Promise(resolve => resolve('NEW_CACHE_KEY'))
+    );
     // invalidateCache('CACHE_KEY');
 
     expect(syncStorage.getItem(key1)).toBeUndefined();
