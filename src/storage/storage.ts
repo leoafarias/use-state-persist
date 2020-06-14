@@ -1,11 +1,11 @@
 /// <reference lib="dom"/>
-import { StorageProvider } from './types';
+import { StorageProvider, StorageEvents } from './types';
 import { Event } from './event';
 
 class SyncStorage implements StorageProvider {
   static instance: SyncStorage;
 
-  private constructor(private event = new Event()) {}
+  private constructor(private events: StorageEvents = {}) {}
 
   static getInstance() {
     if (SyncStorage.instance) return SyncStorage.instance;
@@ -17,7 +17,7 @@ class SyncStorage implements StorageProvider {
   async init() {}
 
   subscribe(key: string, callback: (data: any) => void) {
-    return this.event.subscribe(key, callback);
+    return this.getEvent(key).on(callback);
   }
 
   getItem<T>(key: string) {
@@ -36,11 +36,23 @@ class SyncStorage implements StorageProvider {
 
   setItem<T>(key: string, value: T) {
     if (!key) throw Error('No key provided');
+    this.getEvent(key).trigger(value);
     localStorage.setItem(key, JSON.stringify(value));
-    this.event.trigger(key, value);
+  }
+
+  getEvent(key: string) {
+    if (this.events[key]) {
+      return this.events[key];
+    }
+    return (this.events[key] = new Event());
+  }
+
+  getAllKeys() {
+    return Object.keys(localStorage);
   }
 
   removeItem(key: string) {
+    this.getEvent(key).trigger(undefined);
     localStorage.removeItem(key);
   }
 

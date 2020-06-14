@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { StorageProvider, Data, StorageItem } from './types';
+import { StorageProvider, Data, StorageItem, StorageEvents } from './types';
 import { Event } from './event';
 
 class SyncStorage implements StorageProvider {
@@ -7,7 +7,7 @@ class SyncStorage implements StorageProvider {
   private data: Data = new Map();
   private loaded = false;
 
-  private constructor(private event = new Event()) {}
+  private constructor(private events: StorageEvents = {}) {}
 
   static getInstance() {
     if (SyncStorage.instance) return SyncStorage.instance;
@@ -22,8 +22,8 @@ class SyncStorage implements StorageProvider {
     this.loaded = true;
   }
 
-  subscribe(eventName: string, callback: (data: any) => void) {
-    return this.event.subscribe(eventName, callback);
+  subscribe(key: string, callback: (data: any) => void) {
+    return this.getEvent(key).on(callback);
   }
 
   getItem<T>(key: string) {
@@ -34,12 +34,14 @@ class SyncStorage implements StorageProvider {
   setItem<T>(key: string, value: T) {
     if (!key) throw Error('No key provided');
     this.data.set(key, value);
-    this.event.trigger(key, value);
+    this.getEvent(key).trigger(value);
     AsyncStorage.setItem(key, JSON.stringify(value));
   }
 
   removeItem(key: string) {
+    if (!key) throw Error('No key provided');
     this.data.delete(key);
+    this.getEvent(key).trigger(undefined);
     AsyncStorage.removeItem(key);
   }
 
@@ -49,6 +51,13 @@ class SyncStorage implements StorageProvider {
 
   get length() {
     return this.data.size;
+  }
+
+  getEvent(key: string) {
+    if (this.events[key]) {
+      return this.events[key];
+    }
+    return (this.events[key] = new Event());
   }
 
   clear() {
