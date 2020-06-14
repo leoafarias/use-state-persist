@@ -1,13 +1,14 @@
 {
   "name": "use-state-persist",
   "author": "leoafarias",
-  "version": "0.1.0",
+  "description": "A simple React Hook to persist useState in local storage.",
+  "version": "0.1.9",
   "license": "MIT",
   "main": "dist/index.js",
+  "react-native": "dist/native/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
     "node": ">=10"
@@ -15,11 +16,12 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
+    "build:native": "tsc -b",
     "test": "tsdx test --passWithNoTests",
     "test:coverage": "tsdx test --passWithNoTests --coverage",
     "test:watch": "yarn test:coverage --watch",
     "lint": "tsdx lint",
-    "prepare": "tsdx build"
+    "prepare": "tsdx build && yarn build:native"
   },
   "peerDependencies": {
     "react": ">=16"

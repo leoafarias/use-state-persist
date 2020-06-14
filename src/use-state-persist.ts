@@ -71,6 +71,7 @@ export const useStatePersist = <T>(
   );
 
   const handlePersist = async (data: any) => {
+    syncStorage.init();
     if (data === null || data === undefined) {
       syncStorage.removeItem(storageKey);
     } else {
