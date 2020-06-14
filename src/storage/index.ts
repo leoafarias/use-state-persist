@@ -14,7 +14,9 @@ class SyncStorage implements StorageProvider {
 
   // API Compatibility with native
   static loaded = true;
-  async init() {}
+  async init() {
+    new Promise(resolve => resolve());
+  }
 
   subscribe(key: string, callback: (data: any) => void) {
     return this.getEvent(key).on(callback);
