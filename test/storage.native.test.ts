@@ -1,7 +1,7 @@
 import { arrayOfRandomStorageItems, keyName } from './utils';
 // @ts-ignore: Unreachable code error
 import MockAsyncStorage from 'mock-async-storage';
-import { syncStorage } from '../src/storage/index.native';
+import { syncStorage } from '../src/storage/storage.native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { StorageItem } from '../src/storage/types';
 

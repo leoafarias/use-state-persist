@@ -71,7 +71,14 @@ class SyncStorage implements StorageProvider {
 
     if (!value) return;
 
-    this.data.set(key, JSON.parse(value));
+    let data = value;
+    try {
+      data = JSON.parse(value);
+    } catch (err) {
+      data = value;
+    }
+
+    this.data.set(key, data);
   }
 
   private checkIfLoaded() {
