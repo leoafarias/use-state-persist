@@ -17,8 +17,8 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "build:native": "tsc -b",
-    "test": "tsdx test --passWithNoTests",
-    "test:coverage": "tsdx test --passWithNoTests --coverage",
+    "test": "tsdx test",
+    "test:coverage": "tsdx test --coverage",
     "test:watch": "yarn test:coverage --watch",
     "lint": "tsdx lint",
     "prepare": "tsdx build && yarn build:native"
