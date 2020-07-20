@@ -76,8 +76,8 @@ test('Behaves like useState', async () => {
   const { result: stateResult } = renderHook(() => useState(0));
 
   // assert initial state
-  expect(stateResult.current[0]).toBe(0);
   expect(result.current[0]).toBe(0);
+  expect(stateResult.current[0]).toBe(0);
 
   act(() => {
     stateResult.current[1](count => count + 1);

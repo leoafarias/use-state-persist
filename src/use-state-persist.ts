@@ -1,18 +1,12 @@
-import {
-  useEffect,
-  useState,
-  SetStateAction,
-  Dispatch,
-  useCallback,
-} from 'react';
-import { isFunction } from './utils';
+import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { syncStorage } from './storage';
 import { storageNamespace } from './constants';
+import equal from 'fast-deep-equal/es6';
 
 export const useStatePersist = <T>(
   key: string,
-  value?: T
-): [T, Dispatch<SetStateAction<T>>] => {
+  value?: T | (() => T)
+): [T, Dispatch<SetStateAction<T | undefined>>] => {
   const [state, setState] = useState(value);
 
   // Storage namespace
@@ -20,21 +14,31 @@ export const useStatePersist = <T>(
 
   useEffect(() => {
     initialState();
+
     const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
-      setState(data);
+      if (!equal(data, state)) {
+        setState(data);
+      }
     });
 
     return () => unsubscribe();
-    // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    handlePersist(state);
+  }, [state]);
 
   const initialState = async () => {
     await syncStorage.init();
+    // If an initial value was set skip
+    if (value) return;
+
     const data = syncStorage.getItem<T>(storageKey);
     setState(data);
   };
 
   const handlePersist = async (data: any) => {
+    await syncStorage.init();
     if (!data) {
       syncStorage.removeItem(storageKey);
     } else {
@@ -42,28 +46,5 @@ export const useStatePersist = <T>(
     }
   };
 
-  const updateState = useCallback(
-    async (data: any | ((prevState: T) => T)) => {
-      await syncStorage.init();
-      let value = data;
-      // Could be an anonymous function
-      if (isFunction(data)) value = data(state);
-
-      const newState = JSON.stringify(value);
-      const currentState = JSON.stringify(state);
-      const storedState = JSON.stringify(syncStorage.getItem<T>(storageKey));
-
-      if (newState === currentState) return;
-
-      setState(value);
-
-      // Do not store if already saved
-      if (newState === storedState) return;
-      handlePersist(value);
-    },
-    // eslint-disable-next-line
-    [state]
-  );
-
-  return [state as T, updateState as Dispatch<SetStateAction<T>>];
+  return [state as T, setState];
 };
