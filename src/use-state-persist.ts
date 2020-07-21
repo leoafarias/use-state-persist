@@ -6,7 +6,7 @@ import equal from 'fast-deep-equal/es6';
 export const useStatePersist = <T>(
   key: string,
   value?: T | (() => T)
-): [T, Dispatch<SetStateAction<T | undefined>>] => {
+): [T, Dispatch<SetStateAction<T>>] => {
   const [state, setState] = useState(value);
 
   // Storage namespace
@@ -46,5 +46,5 @@ export const useStatePersist = <T>(
     }
   };
 
-  return [state as T, setState];
+  return [state as T, setState as Dispatch<SetStateAction<T>>];
 };
