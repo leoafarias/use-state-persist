@@ -1,7 +1,6 @@
 import { useEffect, useState, SetStateAction, Dispatch } from 'react';
 import { syncStorage } from './storage';
 import { storageNamespace } from './constants';
-import equal from 'fast-deep-equal/es6';
 
 export const useStatePersist = <T>(
   key: string,
@@ -16,9 +15,8 @@ export const useStatePersist = <T>(
     initialState();
 
     const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
-      if (!equal(data, state)) {
-        setState(data);
-      }
+      // setState(data);
+      console.log(data);
     });
 
     return () => unsubscribe();
