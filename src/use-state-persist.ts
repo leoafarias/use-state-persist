@@ -24,10 +24,6 @@ export const useStatePersist = <T>(
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    handlePersist(state);
-  }, [state]);
-
   const initialState = async () => {
     await syncStorage.init();
     // If an initial value was set skip
@@ -37,9 +33,13 @@ export const useStatePersist = <T>(
     setState(data);
   };
 
+  useEffect(() => {
+    handlePersist(state);
+  }, [state]);
+
   const handlePersist = async (data: any) => {
     await syncStorage.init();
-    if (!data) {
+    if (data == null) {
       syncStorage.removeItem(storageKey);
     } else {
       syncStorage.setItem(storageKey, data);
