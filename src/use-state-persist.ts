@@ -1,48 +1,66 @@
-import { useEffect, useState, SetStateAction, Dispatch } from 'react';
+import {
+  useEffect,
+  useState,
+  SetStateAction,
+  Dispatch,
+  useCallback,
+} from 'react';
 import { syncStorage } from './storage';
 import { storageNamespace } from './constants';
+import deepEquals from 'fast-deep-equal';
 
 export const useStatePersist = <T>(
   key: string,
-  value?: T | (() => T)
+  initialValue?: T | (() => T)
 ): [T, Dispatch<SetStateAction<T>>] => {
-  const [state, setState] = useState(value);
-
   // Storage namespace
-  const storageKey = storageNamespace + key;
+
+  const [state, setState] = useState(() => {
+    try {
+      // Get from local storage by key
+      const item = syncStorage.getItem<T>(storageNamespace + key);
+      // Get item or else initial value
+
+      return item ?? initialValue;
+    } catch (error) {
+      // If error also return initialValue
+      console.error(error);
+      return initialValue;
+    }
+  });
 
   useEffect(() => {
-    initialState();
-
-    const unsubscribe = syncStorage.subscribe(storageKey, (data: T) => {
-      // setState(data);
-      console.log(data);
-    });
+    const unsubscribe = syncStorage.subscribe(
+      storageNamespace + key,
+      (data: T) => {
+        if (isState(data)) return;
+        setState(data);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
 
-  const initialState = async () => {
-    await syncStorage.init();
-    // If an initial value was set skip
-    if (value) return;
+  const updateState: Dispatch<SetStateAction<T>> = data => {
+    try {
+      // Allow value to be a function so we have same API as useState
+      const valueToStore = data instanceof Function ? data(state as T) : data;
+      // Save state
+      setState(valueToStore);
+      // Save to local storage
 
-    const data = syncStorage.getItem<T>(storageKey);
-    setState(data);
-  };
-
-  useEffect(() => {
-    handlePersist(state);
-  }, [state]);
-
-  const handlePersist = async (data: any) => {
-    await syncStorage.init();
-    if (data == null) {
-      syncStorage.removeItem(storageKey);
-    } else {
-      syncStorage.setItem(storageKey, data);
+      syncStorage.setItem(storageNamespace + key, valueToStore);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  return [state as T, setState as Dispatch<SetStateAction<T>>];
+  const isState = useCallback(
+    (compareValue: any) => {
+      return deepEquals(state, compareValue);
+    },
+    [state]
+  );
+
+  return [state as T, updateState];
 };

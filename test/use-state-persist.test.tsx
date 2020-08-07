@@ -20,17 +20,15 @@ const payload = {
 
 beforeAll(async () => {
   await syncStorage.init();
-});
-
-beforeEach(() => {
   syncStorage.clear();
 });
 
+// beforeEach(() => {
+// });
+
 test('Allows to add useStatePersist', async () => {
   const key = keyName();
-  const { result, waitForNextUpdate } = renderHook(() =>
-    useStatePersist<any>(key)
-  );
+  const { result } = renderHook(() => useStatePersist<any>(key));
 
   // assert initial state
   expect(result.current[0]).toBe(undefined);
@@ -38,8 +36,6 @@ test('Allows to add useStatePersist', async () => {
   act(() => {
     result.current[1](payload);
   });
-
-  await waitForNextUpdate();
 
   // assert new state
   expect(result.current[0]).toEqual(payload);
@@ -52,9 +48,7 @@ test('State persists', async () => {
 
   syncStorage.setItem(storageNamespace + key, value);
 
-  const { result, waitForNextUpdate } = renderHook(() => useStatePersist(key));
-
-  await waitForNextUpdate();
+  const { result } = renderHook(() => useStatePersist(key));
 
   // assert initial state
   expect(result.current[0]).toBe(value);
@@ -63,16 +57,12 @@ test('State persists', async () => {
     result.current[1](newValue);
   });
 
-  await waitForNextUpdate();
-
   expect(result.current[0]).toBe(newValue);
 });
 
 test('Behaves like useState', async () => {
   const key = keyName();
-  const { result, waitForNextUpdate } = renderHook(() =>
-    useStatePersist(key, 0)
-  );
+  const { result } = renderHook(() => useStatePersist(key, 0));
   const { result: stateResult } = renderHook(() => useState(0));
 
   // assert initial state
@@ -84,8 +74,6 @@ test('Behaves like useState', async () => {
     result.current[1](count => count + 1);
   });
 
-  await waitForNextUpdate();
-
   // assert new state
   expect(stateResult.current[0]).toEqual(1);
   expect(result.current[0]).toEqual(1);
@@ -95,8 +83,6 @@ test('Behaves like useState', async () => {
     result.current[1](6);
   });
 
-  await waitForNextUpdate();
-
   expect(stateResult.current[0]).toBe(6);
   expect(result.current[0]).toBe(6);
 });
@@ -105,17 +91,13 @@ test('Can set value to null or undefined', async () => {
   // Can set to undefined
   const key = keyName();
   type HookValue = number | undefined | null;
-  const { result, waitForNextUpdate } = renderHook(() =>
-    useStatePersist<HookValue>(key, 0)
-  );
+  const { result } = renderHook(() => useStatePersist<HookValue>(key, 0));
   const { result: stateResult } = renderHook(() => useState<HookValue>(0));
 
   act(() => {
     result.current[1](undefined);
     stateResult.current[1](undefined);
   });
-
-  await waitForNextUpdate();
 
   expect(result.current[0]).toBe(undefined);
   expect(stateResult.current[0]).toBe(undefined);
@@ -137,12 +119,15 @@ test('Clears state', async () => {
     useStatePersist(key, value)
   );
 
+  act(() => {
+    result.current[1](value);
+  });
   expect(result.current[0]).toEqual(value);
 
-  await act(async () => {
+  act(() => {
     clearState();
-    await waitForNextUpdate();
   });
+  await waitForNextUpdate();
 
   expect(result.current[0]).toEqual(undefined);
 });

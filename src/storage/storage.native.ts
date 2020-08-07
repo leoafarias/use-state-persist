@@ -33,6 +33,7 @@ class SyncStorage implements StorageProvider {
 
   setItem<T>(key: string, value: T) {
     if (!key) throw Error('No key provided');
+    this.checkIfLoaded();
     this.data.set(key, value);
     this.getEvent(key).trigger(value);
     AsyncStorage.setItem(key, JSON.stringify(value));
