@@ -101,3 +101,13 @@ invalidateCache('CACHE_KEY');
 // You can also send a promise which will compare the result
 invalidateCache(async () => 'CACHE_KEY');
 ```
+
+### React Native
+
+Init prepares the SyncStorage to work synchronously, by getting all values for all keys stored on AsyncStorage. You can use the init method on the web without any side effects to keep code consistency.
+
+```typescript
+import { syncStorage } from 'use-state-persist';
+
+await syncStorage.init();
+```
