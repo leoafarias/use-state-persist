@@ -18,6 +18,15 @@ npm install use-state-persist
 yarn add use-state-persist
 ```
 
+For `React Native` make sure you do the following on app start up:
+
+```typescript
+import { syncStorage } from 'use-state-persist';
+
+// Initialize async storage
+await syncStorage.init();
+```
+
 ## How to persists useState
 
 Same behavior and API as `useState` so you can use it by easily replacing the `useState` hook for the calls which you want to persist offline.

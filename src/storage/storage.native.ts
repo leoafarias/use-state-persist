@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StorageProvider, Data, StorageItem, StorageEvents } from './types';
 import { Event } from './event';
+import { Data, StorageEvents, StorageItem, StorageProvider } from './types';
 
 class SyncStorage implements StorageProvider {
   static instance: SyncStorage;
