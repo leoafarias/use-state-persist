@@ -39,7 +39,7 @@
   },
   "module": "dist/use-state-persist.esm.js",
   "devDependencies": {
-    "@react-native-community/async-storage": "^1.11.0",
+    "@react-native-async-storage/async-storage": "^1.15.4",
     "@testing-library/react-hooks": "^3.3.0",
     "@types/faker": "^4.1.12",
     "@types/react": "^16.9.36",

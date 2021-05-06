@@ -2,7 +2,7 @@ import { arrayOfRandomStorageItems, keyName } from './utils';
 // @ts-ignore: Unreachable code error
 import MockAsyncStorage from 'mock-async-storage';
 import { syncStorage } from '../src/storage/storage.native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageItem } from '../src/storage/types';
 
 // function timeout(ms: number) {
@@ -11,10 +11,10 @@ import { StorageItem } from '../src/storage/types';
 
 const mock = () => {
   const mockImpl = new MockAsyncStorage();
-  jest.mock('@react-native-community/async-storage', () => mockImpl);
+  jest.mock('@react-native-async-storage/async-storage', () => mockImpl);
 };
 
-const release = () => jest.unmock('@react-native-community/async-storage');
+const release = () => jest.unmock('@react-native-async-storage/async-storage');
 
 beforeAll(async () => {
   mock();
