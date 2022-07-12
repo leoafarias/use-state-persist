@@ -21,7 +21,7 @@ export const useStatePersist = <T>(
       const item = syncStorage.getItem<T>(storageNamespace + key);
       // Get item or else initial value
 
-      return item ? item : initialValue;
+      return item === null ? initialValue : item;
     } catch (error) {
       // If error also return initialValue
       console.error(error);
