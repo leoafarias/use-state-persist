@@ -2,7 +2,7 @@
   "name": "use-state-persist",
   "author": "leoafarias",
   "description": "A simple React Hook to persist useState in local storage.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "main": "dist/index.js",
   "react-native": "dist/native/index.js",
@@ -39,7 +39,7 @@
   },
   "module": "dist/use-state-persist.esm.js",
   "devDependencies": {
-    "@react-native-async-storage/async-storage": "^1.15.4",
+    "@react-native-async-storage/async-storage": "^1.17.7",
     "@testing-library/react-hooks": "^3.3.0",
     "@types/faker": "^4.1.12",
     "@types/react": "^16.9.36",

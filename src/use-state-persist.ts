@@ -1,13 +1,13 @@
+import deepEquals from 'fast-deep-equal';
 import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
   useEffect,
   useState,
-  SetStateAction,
-  Dispatch,
-  useCallback,
 } from 'react';
-import { syncStorage } from './storage';
 import { storageNamespace } from './constants';
-import deepEquals from 'fast-deep-equal';
+import { syncStorage } from './storage';
 
 export const useStatePersist = <T>(
   key: string,
@@ -19,9 +19,11 @@ export const useStatePersist = <T>(
     try {
       // Get from local storage by key
       const item = syncStorage.getItem<T>(storageNamespace + key);
-      // Get item or else initial value
 
-      return item === null ? initialValue : item;
+      // Get item or else initial value
+      const isNotset = item === undefined || item === null;
+
+      return isNotset ? initialValue : item;
     } catch (error) {
       // If error also return initialValue
       console.error(error);
